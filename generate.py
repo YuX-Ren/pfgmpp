@@ -252,7 +252,7 @@ def parse_int_list(s):
 #----------------------------------------------------------------------------
 
 @click.command()
-@click.option('--network', 'network_pkl',  help='Network pickle filename', metavar='PATH|URL',                      type=str)
+@click.option('--network',                 help='Network pickle filename', metavar='DIR',                      type=str, required=True)
 @click.option('--outdir',                  help='Where to save the output images', metavar='DIR',                   type=str, required=True)
 @click.option('--seeds',                   help='Random seeds (e.g. 1,2,5-10)', metavar='LIST',                     type=parse_int_list, default='0-63', show_default=True)
 @click.option('--subdirs',                 help='Create subdirectory for every 1000 seeds',                         is_flag=True)
@@ -280,9 +280,9 @@ def parse_int_list(s):
 @click.option('--use_pickle',          help='load model by pickle', metavar='BOOL',              type=bool, default=False, show_default=True)
 
 @click.option('--pfgmpp',          help='Train PFGM++', metavar='BOOL',              type=bool, default=False, show_default=True)
-@click.option('--aug_dim',             help='additional dimension', metavar='INT',                            type=click.IntRange(min=2), default=128, show_default=True)
+@click.option('--aug_dim',             help='additional dimension', metavar='INT',                            type=click.IntRange(min=1), default=128, show_default=True)
 
-def main(ckpt, end_ckpt, outdir, subdirs, seeds, class_idx, max_batch_size, save_images, pfgmpp, aug_dim, edm, use_pickle, device=torch.device('cuda'), **sampler_kwargs):
+def main(network,ckpt, end_ckpt, outdir, subdirs, seeds, class_idx, max_batch_size, save_images, pfgmpp, aug_dim, edm, use_pickle, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper
     "Elucidating the Design Space of Diffusion-Based Generative Models".
 
@@ -297,8 +297,8 @@ def main(ckpt, end_ckpt, outdir, subdirs, seeds, class_idx, max_batch_size, save
     if use_pickle:
         stats = glob.glob(os.path.join(outdir, "training-state-*.pkl"))
     else:
-        stats = glob.glob(os.path.join(outdir, "training-state-*.pt"))
-
+        stats = glob.glob(os.path.join(network, "training-state-*.pt"))
+    os.makedirs(outdir, exist_ok=True)
     done_list = []
 
     for ckpt_dir in stats:
