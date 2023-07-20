@@ -27,20 +27,27 @@
 ![img](https://pic3.zhimg.com/v2-9a91c036c6db9b95f07b23a5460c9ec2_r.jpg)
 
 在物理上，高维电场线满足泊松方程：
+
 $$
   \nabla^2 \varphi(x) = -\rho (x)
 $$
+
 边界条件给定后它具有唯一解：
+
 $$
   \forall \tilde{\mathbf{x}} \in \mathbb{R} ^{N+1},E(\tilde{\mathbf{x}}) = -\nabla\varphi(\tilde{\mathbf{x}}) = \frac{1}{S_N(1)} \int \frac{\tilde{\mathbf{x}}  -\tilde{\mathbf{y}}}{\|\tilde{\mathbf{x}} - \tilde{\mathbf{y}}\|^{N+1}} p(\tilde{\mathbf{y}}) d\tilde{\mathbf{y}}
 $$
+
 因此，我们就可以设计一个神经网络来估计这些电场线的方向。由于输入（粒子的坐标）的维度和输出（粒子的方向）的维度一致，故和 diffusion model 一样，采取 Unet 结构进行预测。
 
 &emsp;&emsp;由于我们的模型并不要求计算电场线的强度，所以还需要对这个场进行归一化处理，这样也能使得学习的数据在某个大小范围内保持一致，并更好收敛：
+
 $$
   \hat{\mathbf{E}}(\tilde{\mathbf{x}})=c(\tilde{\mathbf{x}}) \sum_{i=1}^n \frac{\tilde{\mathbf{x}}-\tilde{\mathbf{x}}_i}{\left\|\tilde{\mathbf{x}}-\tilde{\mathbf{x}}_i\right\|^{N+1}}
 $$
+
 使用的 loss function 则为：
+
 $$
   \mathcal{L}(\theta)=\frac{1}{|\mathcal{B}|} \sum_{i=1}^{|\mathcal{B}|}\left\|f_\theta\left(\tilde{\mathbf{y}}_i\right)-\mathbf{v}_{\mathcal{B}_L}\left(\tilde{\mathbf{y}}_i\right)\right\|_2^2
 $$
